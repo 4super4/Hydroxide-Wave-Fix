@@ -185,7 +185,24 @@ end
 useMethods(globalMethods)
 
 local HttpService = game:GetService("HttpService")
-local releaseInfo = HttpService:JSONDecode(game:HttpGetAsync("https://api.github.com/repos/" .. user .. "/Hydroxide-Wave-Fix/releases"))[1]
+local HttpService = game:GetService("HttpService")
+local success, response = pcall(function()
+    return game:HttpGetAsync("https://api.github.com/repos/" .. user .. "/Hydroxide-Wave-Fix/releases")
+end)
+
+if success then
+    local parsed, releaseInfo = pcall(function()
+        return HttpService:JSONDecode(response)
+    end)
+    
+    if parsed then
+        releaseInfo = releaseInfo[1]
+    else
+        warn("Failed to parse JSON response: ", releaseInfo)
+    end
+else
+    warn("HTTP request failed: ", response)
+end
 
 if readFile and writeFile then
     local hasFolderFunctions = (isFolder and makeFolder) ~= nil
