@@ -194,16 +194,7 @@ local function fetchReleaseInfo()
 
     if success then
         print("HTTP response:", response) -- Print the raw response for debugging
-        local parsed, releaseInfo = pcall(function()
-            return HttpService:JSONDecode(response)
-        end)
-        
-        if parsed then
-            return releaseInfo[1]
-        else
-            warn("Failed to parse JSON response:", response)
-            return nil
-        end
+        return response
     else
         warn("HTTP request failed:", response)
         return nil
@@ -211,7 +202,29 @@ local function fetchReleaseInfo()
 end
 
 -- Fetch release information
-local releaseInfo = fetchReleaseInfo()
+local response = fetchReleaseInfo()
+
+if response then
+    local parsed, releaseInfo = pcall(function()
+        return HttpService:JSONDecode(response)
+    end)
+    
+    if parsed then
+        releaseInfo = releaseInfo[1]
+        print("Parsed JSON: ", releaseInfo) -- Debug print to check the content of releaseInfo
+        
+        if releaseInfo and releaseInfo.tag_name then
+            print("Release tag name:", releaseInfo.tag_name) -- Debug print to check the tag name
+            -- Proceed with your logic here
+        else
+            warn("releaseInfo or releaseInfo.tag_name is nil")
+        end
+    else
+        warn("Failed to parse JSON response: ", response)
+    end
+else
+    warn("Failed to retrieve HTTP response.")
+end
 
 
 if readFile and writeFile then
