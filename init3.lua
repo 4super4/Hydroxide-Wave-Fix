@@ -1,11 +1,12 @@
 local environment = assert(getgenv, "<OH> ~ Your exploit is not supported")()
 
-if oh then
-    oh.Exit()
+-- Ensure oh is defined
+if environment.oh then
+    environment.oh.Exit()
 end
 
 local web = true
-local user = "4super4" -- change if you're using a fork
+local user = "4super4" -- Ensure this is correctly set
 local branch = "revision"
 local importCache = {}
 
@@ -15,7 +16,6 @@ local function hasMethods(methods)
             return false
         end
     end
-
     return true
 end
 
@@ -129,11 +129,11 @@ environment.oh = {
         }
     },
     Exit = function()
-        for _i, event in pairs(oh.Events) do
+        for _i, event in pairs(environment.oh.Events) do
             event:Disconnect()
         end
 
-        for original, hook in pairs(oh.Hooks) do
+        for original, hook in pairs(environment.oh.Hooks) do
             local hookType = type(hook)
             if hookType == "function" then
                 hookFunction(hook, original)
