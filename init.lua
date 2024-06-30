@@ -185,24 +185,33 @@ end
 useMethods(globalMethods)
 
 local HttpService = game:GetService("HttpService")
-local success, response = pcall(function()
-    return game:HttpGetAsync("https://api.github.com/repos/" .. user .. "/Hydroxide-Wave-Fix/releases")
-end)
 
-if success then
-    print("HTTP response:", response) -- This line will print the raw response
-    local parsed, releaseInfo = pcall(function()
-        return HttpService:JSONDecode(response)
+-- Function to perform HTTP GET request and handle errors
+local function fetchReleaseInfo()
+    local success, response = pcall(function()
+        return game:HttpGetAsync("https://api.github.com/repos/" .. user .. "/Hydroxide-Wave-Fix/releases")
     end)
-    
-    if parsed then
-        releaseInfo = releaseInfo[1]
+
+    if success then
+        print("HTTP response:", response) -- Print the raw response for debugging
+        local parsed, releaseInfo = pcall(function()
+            return HttpService:JSONDecode(response)
+        end)
+        
+        if parsed then
+            return releaseInfo[1]
+        else
+            warn("Failed to parse JSON response:", response)
+            return nil
+        end
     else
-        warn("Failed to parse JSON response: ", releaseInfo)
+        warn("HTTP request failed:", response)
+        return nil
     end
-else
-    warn("HTTP request failed: ", response)
 end
+
+-- Fetch release information
+local releaseInfo = fetchReleaseInfo()
 
 
 if readFile and writeFile then
