@@ -185,12 +185,12 @@ end
 useMethods(globalMethods)
 
 local HttpService = game:GetService("HttpService")
-local HttpService = game:GetService("HttpService")
 local success, response = pcall(function()
     return game:HttpGetAsync("https://api.github.com/repos/" .. user .. "/Hydroxide-Wave-Fix/releases")
 end)
 
 if success then
+    print("HTTP response:", response) -- This line will print the raw response
     local parsed, releaseInfo = pcall(function()
         return HttpService:JSONDecode(response)
     end)
@@ -203,6 +203,7 @@ if success then
 else
     warn("HTTP request failed: ", response)
 end
+
 
 if readFile and writeFile then
     local hasFolderFunctions = (isFolder and makeFolder) ~= nil
